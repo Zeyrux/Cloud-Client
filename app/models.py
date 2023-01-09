@@ -80,22 +80,18 @@ class Event(Base):
         if self.src_file is None:
             self.src_file = File(src_path)
             session.add(self.src_file)
-            session.commit()
         # add dest_path if not exists
         if dest_path is not None:
             self.dest_file = session.query(File).filter_by(path=dest_path).first()
             if self.dest_file is None:
                 self.dest_file = File(dest_path)
                 session.add(self.dest_file)
-                session.commit()
         # handle remove
         if event_type == 2:
             self.src_file.exists = False
-            session.commit()
         # handle create
         if event_type == 3:
             self.src_file.exists = True
-            session.commit()
         # turn files into path
         self.src_file = self.src_file.id
         if self.dest_file is not None:

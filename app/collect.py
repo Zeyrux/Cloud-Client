@@ -35,7 +35,6 @@ class EventHandler(FileSystemEventHandler):
                     else None,
                 )
             )
-            self.session.commit()
 
 
 class Collector:
