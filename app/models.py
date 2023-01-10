@@ -51,9 +51,11 @@ class Event(Base):
     # 2 file deleted
     # 3 file created
     id = Column("id", INTEGER(), primary_key=True)
+    client = Column("client", VARCHAR(15), nullable=True, default=None)
     event_type = Column("event_type", INTEGER(), nullable=False)
     src_file = Column(ForeignKey("files.id"), nullable=False)
     dest_file = Column(ForeignKey("files.id"), nullable=True)
+    time = Column("time", DATETIME(), nullable=False)
 
     def __init__(
         self,
@@ -61,7 +63,9 @@ class Event(Base):
         event_type: str | int,
         src_path: str,
         dest_path: str = None,
+        time: datetime = datetime.now(),
     ) -> None:
+        self.time = time
         if type(event_type).__name__ == "str":
             event_type = (
                 0
@@ -76,16 +80,19 @@ class Event(Base):
             )
         self.event_type = event_type
         # add src_file if not exists
+        print("SRC", src_path)
         self.src_file = session.query(File).filter_by(path=src_path).first()
         if self.src_file is None:
             self.src_file = File(src_path)
             session.add(self.src_file)
+            session.commit()
         # add dest_path if not exists
         if dest_path is not None:
             self.dest_file = session.query(File).filter_by(path=dest_path).first()
             if self.dest_file is None:
                 self.dest_file = File(dest_path)
                 session.add(self.dest_file)
+                session.commit()
         # handle remove
         if event_type == 2:
             self.src_file.exists = False

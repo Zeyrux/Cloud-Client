@@ -18,7 +18,6 @@ class Database:
         self.Base = Base
         self.Base.metadata.create_all(bind=self.engine)
         self.session = sessionmaker(bind=self.engine)()
-        self.session.autocommit = True
 
 
 class Client:
@@ -35,6 +34,7 @@ class Client:
     def run(self) -> None:
         self.collector.run()
         while True:
+            self.sync()
             self.queue.get()
 
     def sync(self) -> None:
