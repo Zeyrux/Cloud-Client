@@ -14,9 +14,9 @@ from watchdog.events import (
 
 
 class EventHandler(FileSystemEventHandler):
-    def __init__(self, session) -> None:
+    def __init__(self, db) -> None:
         super().__init__()
-        self.session = session
+        self.session = db.session()
 
     def on_any_event(self, event):
         if type(event) in [
@@ -39,11 +39,11 @@ class EventHandler(FileSystemEventHandler):
 
 
 class Collector:
-    def __init__(self, session) -> None:
+    def __init__(self, db) -> None:
         self.paths = load(open("sync.json", "r"))
         self.observer = Observer()
         for path in self.paths:
-            self.observer.schedule(EventHandler(session), path, recursive=True)
+            self.observer.schedule(EventHandler(db), path, recursive=True)
 
     def run(self) -> None:
         self.observer.start()
