@@ -1,5 +1,6 @@
 from threading import Thread
 from json import load
+from pathlib import Path
 
 from .models import Event
 
@@ -11,6 +12,9 @@ from watchdog.events import (
     FileDeletedEvent,
     FileCreatedEvent,
 )
+
+
+SYNC_PATH = Path("client", "sync.json")
 
 
 class EventHandler(FileSystemEventHandler):
@@ -40,7 +44,7 @@ class EventHandler(FileSystemEventHandler):
 
 class Collector:
     def __init__(self, db) -> None:
-        self.paths = load(open("sync.json", "r"))
+        self.paths = load(open(SYNC_PATH, "r"))
         self.observer = Observer()
         for path in self.paths:
             self.observer.schedule(EventHandler(db), path, recursive=True)

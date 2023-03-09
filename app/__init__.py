@@ -12,6 +12,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
 
+DATA_PATH = Path("client", "data.json")
+
+
 class Database:
     def __init__(self, db_path: Path | str) -> None:
         self.path = db_path if type(db_path).__name__ == "Path" else Path(db_path)
@@ -33,12 +36,12 @@ class Database:
 class Client:
     def __init__(self) -> None:
         self.socket = socket(AF_INET, SOCK_STREAM)
-        data = load(open("data.json", "r"))
+        data = load(open(DATA_PATH, "r"))
         self.host = data["host"]
         self.port = data["port"]
         self.password = data["password"]
         self.queue = Queue()
-        self.db = Database("db.db")
+        self.db = Database(Path("client", "db.db"))
         self.collector = Collector(self.db)
 
     def run(self) -> None:
